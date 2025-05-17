@@ -1,0 +1,17 @@
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\View.exe.config
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\View.exe
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\View.pdb
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\BusinessLogic.dll
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\Model.dll
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\BusinessLogic.pdb
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\BusinessLogic.dll.config
+C:\Users\alisa\source\repos\UchetRashodov\View\bin\Debug\Model.pdb
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.csproj.AssemblyReference.cache
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.Properties.Resources.resources
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.csproj.GenerateResource.cache
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.csproj.CoreCompileInputs.cache
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.csproj.CopyComplete
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.exe
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.pdb
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.EmployeeMainForm.resources
+C:\Users\alisa\source\repos\UchetRashodov\View\obj\Debug\View.AddExpenseForm.resources

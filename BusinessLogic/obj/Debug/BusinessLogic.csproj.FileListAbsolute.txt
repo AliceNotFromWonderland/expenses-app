@@ -1,0 +1,10 @@
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\Debug\BusinessLogic.dll.config
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\Debug\BusinessLogic.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\Debug\BusinessLogic.pdb
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\Debug\Model.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\Debug\Model.pdb
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\Debug\BusinessLogic.csproj.AssemblyReference.cache
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\Debug\BusinessLogic.csproj.CoreCompileInputs.cache
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\Debug\BusinessLogic.csproj.CopyComplete
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\Debug\BusinessLogic.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\Debug\BusinessLogic.pdb

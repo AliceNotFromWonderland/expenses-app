@@ -1,0 +1,14 @@
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\BusinessLogic.dll.config
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\BusinessLogic.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\BusinessLogic.pdb
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\EntityFramework.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\EntityFramework.SqlServer.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\Model.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\Model.pdb
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\EntityFramework.xml
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\bin\x64\Debug\EntityFramework.SqlServer.xml
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\x64\Debug\BusinessLogic.csproj.AssemblyReference.cache
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\x64\Debug\BusinessLogic.csproj.CoreCompileInputs.cache
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\x64\Debug\BusinessLogic.csproj.CopyComplete
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\x64\Debug\BusinessLogic.dll
+C:\Users\alisa\source\repos\UchetRashodov\BusinessLogic\obj\x64\Debug\BusinessLogic.pdb
