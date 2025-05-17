@@ -1,0 +1,6 @@
+C:\Users\alisa\source\repos\UchetRashodov\Model\bin\Release\Model.dll
+C:\Users\alisa\source\repos\UchetRashodov\Model\bin\Release\Model.pdb
+C:\Users\alisa\source\repos\UchetRashodov\Model\obj\Release\Model.csproj.AssemblyReference.cache
+C:\Users\alisa\source\repos\UchetRashodov\Model\obj\Release\Model.csproj.CoreCompileInputs.cache
+C:\Users\alisa\source\repos\UchetRashodov\Model\obj\Release\Model.dll
+C:\Users\alisa\source\repos\UchetRashodov\Model\obj\Release\Model.pdb
