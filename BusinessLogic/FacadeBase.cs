@@ -54,9 +54,9 @@ namespace BusinessLogic
             return _dbManager.CheckFundsAvailability(sum, departmentId);
         }
 
-        public void DoPaymentTransaction(decimal sum, int departmentId)
+        public void DoPaymentTransaction(int departmentId)
         {
-            _dbManager.DoPaymentTransaction(sum, departmentId);
+            _dbManager.DoPaymentTransaction(departmentId);
         }
 
     }

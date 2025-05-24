@@ -42,16 +42,28 @@ namespace BusinessLogic
 
             return (null, 0, 0); 
         }
-      
+
 
         public void CreateExpense(Expense expense)
         {
+            if (expense == null)
+                throw new ArgumentNullException(nameof(expense));
+
+            if (expense.Amount <= 0)
+                throw new ArgumentException("Сумма должна быть больше нуля.");
+
+            if (string.IsNullOrWhiteSpace(expense.Description))
+                throw new ArgumentException("Описание не может быть пустым.");
+
+            if (expense.CategoryID <= 0)
+                throw new ArgumentException("CategoryID должен быть выбран (больше нуля).");
+
             using (var connection = new OleDbConnection(_connectionString))
             {
                 connection.Open();
                 var command = new OleDbCommand(
                     @"INSERT INTO Расходы (ID_Сотрудника, ID_Отдела, Дата, Сумма, Категория, Описание, Статус)
-                      VALUES (?, ?, ?, ?, ?, ?, ?)", connection);
+              VALUES (?, ?, ?, ?, ?, ?, ?)", connection);
 
                 command.Parameters.AddWithValue("?", expense.EmployeeID);
                 command.Parameters.AddWithValue("?", expense.Department);
@@ -64,6 +76,7 @@ namespace BusinessLogic
                 command.ExecuteNonQuery();
             }
         }
+
 
         public List<ExpenseCategory> LoadExpensesCategories()
         {
@@ -101,7 +114,7 @@ namespace BusinessLogic
             using (var connection = new OleDbConnection(_connectionString))
             {
                 connection.Open();
-                var command = new OleDbCommand("SELECT * FROM Expenses", connection);
+                var command = new OleDbCommand("SELECT * FROM Расходы", connection);
                 using (var reader = command.ExecuteReader())
                 {
                     while (reader.Read())
@@ -145,7 +158,7 @@ namespace BusinessLogic
             {
                 connection.Open();
                 var command = new OleDbCommand(
-                    "SELECT * FROM Expenses WHERE Status = 'Pending'", connection);
+                    "SELECT * FROM Расходы WHERE Статус = 'На рассмотрении'", connection);
 
                 using (var reader = command.ExecuteReader())
                 {
@@ -159,26 +172,12 @@ namespace BusinessLogic
             return expenses;
         }
 
-        public void UpdateExpenseStatus(int id, string status)
-        {
-            using (var connection = new OleDbConnection(_connectionString))
-            {
-                connection.Open();
-                var command = new OleDbCommand(
-                    "UPDATE Expenses SET Status = ? WHERE ExpenseID = ?", connection);
-
-                command.Parameters.AddWithValue("?", status);
-                command.Parameters.AddWithValue("?", id);
-
-                command.ExecuteNonQuery();
-            }
-        }      
-
+      
         public bool CheckFundsAvailability(decimal sum, int departmentId)
         {
             using (OleDbConnection connection = new OleDbConnection(_connectionString))
             {
-                string query = "SELECT RemainingBudget FROM Departments WHERE DepartmentID = ?";
+                string query = "SELECT Остаток FROM Остатки_бюджета WHERE ID_Отдела = ?";
                 OleDbCommand command = new OleDbCommand(query, connection);
                 command.Parameters.AddWithValue("?", departmentId);
 
@@ -193,12 +192,60 @@ namespace BusinessLogic
                 return false;
             }
         }
-
-        public void DoPaymentTransaction(decimal sum, int departmentId)
+        public decimal GetCurrentBudget(int departmentId)
         {
             using (OleDbConnection connection = new OleDbConnection(_connectionString))
             {
-                string query = "UPDATE Departments SET RemainingBudget = RemainingBudget - ? WHERE DepartmentID = ?";
+                string query = "SELECT Остаток FROM Остатки_бюджета WHERE ID_Отдела = ?";
+                OleDbCommand command = new OleDbCommand(query, connection);
+                command.Parameters.AddWithValue("?", departmentId);
+
+                connection.Open();
+                var result = command.ExecuteScalar();
+                return result != null ? Convert.ToDecimal(result) : 0;
+            }
+        }
+
+        public void DoPaymentTransaction(int expenseId)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+
+                string selectQuery = @"SELECT Сумма, ID_Отдела FROM Расходы WHERE ID_Расхода = ? AND Статус = 'Одобрено'";
+
+                using (var selectCmd = new OleDbCommand(selectQuery, connection))
+                {
+                    selectCmd.Parameters.AddWithValue("?", expenseId);
+
+                    using (var reader = selectCmd.ExecuteReader())
+                    {
+                        if (!reader.Read())
+                            throw new InvalidOperationException("Заявка не найдена или ещё не одобрена.");
+
+                        decimal amount = Convert.ToDecimal(reader["Сумма"]);
+                        int departmentId = Convert.ToInt32(reader["ID_Отдела"]);
+
+                        // Проверка бюджета
+                        if (!CheckFundsAvailability(amount, departmentId))
+                            throw new InvalidOperationException("Недостаточно средств в отделе.");
+
+                        // Списание средств
+                        PayExpense(amount, departmentId);
+
+                        // Обновление статуса заявки
+                        MarkExpenseAsPaid(expenseId);
+                    }
+                }
+            }
+        }
+
+
+        public void PayExpense(decimal sum, int departmentId)
+        {
+            using (OleDbConnection connection = new OleDbConnection(_connectionString))
+            {
+                string query = "UPDATE Остатки_бюджета SET Остаток = Остаток - ? WHERE ID_Отдела = ?";
                 OleDbCommand command = new OleDbCommand(query, connection);
                 command.Parameters.AddWithValue("?", sum);
                 command.Parameters.AddWithValue("?", departmentId);
@@ -207,20 +254,139 @@ namespace BusinessLogic
                 command.ExecuteNonQuery();
             }
         }
+        public void MarkExpenseAsPaid(int expenseId)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                string updateStatusQuery = "UPDATE Расходы SET Статус = 'Оплачено' WHERE ID_Расхода = ?";
+
+                using (var statusCmd = new OleDbCommand(updateStatusQuery, connection))
+                {
+                    statusCmd.Parameters.AddWithValue("?", expenseId);
+                    statusCmd.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public string GetExpenseStatus(int expenseId)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var command = new OleDbCommand("SELECT Статус FROM Расходы WHERE ID_Расхода = ?", connection);
+                command.Parameters.AddWithValue("?", expenseId);
+                var result = command.ExecuteScalar();
+                return result?.ToString();
+            }
+        }
+        public int GetDepartmentIdByExpenseId(int expenseId)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var command = new OleDbCommand("SELECT ID_Отдела FROM Расходы WHERE ID_Расхода = ?", connection);
+                command.Parameters.AddWithValue("?", expenseId);
+
+                var result = command.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : 0;
+            }
+        }
+
+        public decimal GetExpenseAmount(int expenseId)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var cmd = new OleDbCommand("SELECT Сумма FROM Расходы WHERE ID_Расхода = ?", connection);
+                cmd.Parameters.AddWithValue("?", expenseId);
+                return Convert.ToDecimal(cmd.ExecuteScalar());
+            }
+        }
+
+        public void UpdateExpenseStatus(int expenseId, string status)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var cmd = new OleDbCommand("UPDATE Расходы SET Статус = ? WHERE ID_Расхода = ?", connection);
+                cmd.Parameters.AddWithValue("?", status);
+                cmd.Parameters.AddWithValue("?", expenseId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        public void UpdateDepartmentBudget(int departmentId, decimal budget)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var cmd = new OleDbCommand("UPDATE Остатки_бюджета SET Остаток = ? WHERE ID_Отдела = ?", connection);
+                cmd.Parameters.AddWithValue("?", budget);
+                cmd.Parameters.AddWithValue("?", departmentId);
+                cmd.ExecuteNonQuery();
+            }
+        }       
+
+        public void DeleteExpenseById(int expenseId)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var cmd = new OleDbCommand("DELETE FROM Расходы WHERE ID_Расхода = ?", connection);
+                cmd.Parameters.AddWithValue("?", expenseId);
+                cmd.ExecuteNonQuery();
+            }
+        }
+        public int GetLastInsertedExpenseId()
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var cmd = new OleDbCommand(
+                    "SELECT MAX(ID_Расхода) FROM Расходы", connection);
+                var result = cmd.ExecuteScalar();
+                return result != DBNull.Value ? Convert.ToInt32(result) : 0;
+            }
+        }
+
+        public Expense GetExpenseById(int id)
+        {
+            using (var connection = new OleDbConnection(_connectionString))
+            {
+                connection.Open();
+                var cmd = new OleDbCommand(
+                    "SELECT * FROM Расходы WHERE ID_Расхода = ?", connection);
+                cmd.Parameters.AddWithValue("?", id);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return ReadExpense(reader); 
+                    }
+                }
+            }
+
+            return null;
+        }
+
+
+
 
 
         private Expense ReadExpense(OleDbDataReader reader)
         {
             return new Expense
             {
-                ExpenseID = Convert.ToInt32(reader["ExpenseID"]),
-                EmployeeID = Convert.ToInt32(reader["EmployeeID"]),
-                Department = Convert.ToInt32(reader["Department"]),
-                CategoryID = Convert.ToInt32(reader["Category"]),
-                Amount = Convert.ToDecimal(reader["Amount"]),
-                Status = reader["Status"].ToString(),
-                Date = Convert.ToDateTime(reader["Date"]),
-                Description = reader["Description"].ToString()
+                ExpenseID = Convert.ToInt32(reader["ID_Расхода"]),
+                EmployeeID = Convert.ToInt32(reader["ID_Сотрудника"]),
+                Department = Convert.ToInt32(reader["ID_Отдела"]),
+                CategoryID = Convert.ToInt32(reader["Категория"]),
+                Amount = Convert.ToDecimal(reader["Сумма"]),
+                Status = reader["Статус"].ToString(),
+                Date = Convert.ToDateTime(reader["Дата"]),
+                Description = reader["Описание"].ToString()
             };
         }
     }

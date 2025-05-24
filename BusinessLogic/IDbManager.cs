@@ -16,7 +16,7 @@ namespace BusinessLogic
         void UpdateExpenseStatus(int id, string status);
 
         bool CheckFundsAvailability(decimal sum, int departmentId); 
-        void DoPaymentTransaction(decimal sum, int departmentId);
+        void DoPaymentTransaction(int expenseId);
 
 
         List<Expense> GetAllExpenses();

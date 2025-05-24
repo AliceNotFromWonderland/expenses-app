@@ -12,7 +12,7 @@ namespace BusinessLogic
     {
         List<Expense> LoadApprovedExpenses(string filter);
         bool CheckFundsAvailability(decimal sum, int departmentId);
-        void DoPaymentTransaction(decimal sum, int departmentId);
+        void DoPaymentTransaction(int departmentId);
         void UpdateExpenseStatus(int id, string status);
     }
 }
